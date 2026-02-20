@@ -1,0 +1,109 @@
+# The issue
+
+We have a motor that can be controlled by different users through a software interface. Currently, there are no protections
+against multiple users trying to use the motor at the same time. Having multiple users trying to control the motor at the same
+time can lead to issues so we want to avoid it.
+
+We assume that once a user start using the motor, they have exclusive access to it. As long as the current user doesn't
+release the control of the motor, no other user can have access to it, no matter how much downtime there is.
+
+The process for using the motor would be the following:
+
+1. User ask to take control of the motor
+2. User get control of the motor
+3. User control the motor
+4. User release control of the motor
+
+if the motor is not in use and
+
+1. User ask to take control of the motor
+2. User is denied access to the motor
+
+if the motor is in use.
+
+Currently, our system can be modelled like this:
+
+![Original diagram](./orig_struct.png)
+
+# How to fix the issue
+
+A solution to solve this issue is to add a middleware between the python kernels and the driver.
+This middleware act as a control authority, giving access to the motor depending on whether it's already being used or not.
+If no one is using the motor, the control authority will give access to the first asking to control the motor. If a
+user is already using the motor then the control authority will deny access to any other user.
+
+The architecture of the updated system can be schematized this way:
+
+![Original diagram](./changed_struct.png)
+
+The middleware has three functions:
+
+- a login function to allow a user to take exclusive control of the motor
+- a logout function to allow the user that has control of the motor to release it
+- a function allowing a user with control of the motor to send commands to the driver
+
+A simple implementation of those functions could be :
+
+```
+
+def log_in(user):
+  if no users logged in:
+    log in user
+  else if user logged in and user timed out:
+    log out previous user
+    log in user
+  else:
+    return error
+
+
+def log_out(user):
+  if user is logged in:
+    log out user
+  else:
+    return error
+
+def do_command(user, command):
+  if user is logged in:
+    forward command to driver
+    return result of the execution of the command
+  else:
+    return error
+```
+
+From the user side, the procedure to access the motor would be the following :
+
+```
+log_in(user)
+if error:
+  warn user that the motor is in use
+  stop
+
+until user logs out:
+   wait for command input
+   forward_command(user, command)
+
+log_out(user)
+```
+
+
+
+
+# How to go from a design to a working delivery
+
+To go from a design to a working delivery, I would go through the following steps:
+
+- First, write the specification of the problem with the following constraints:
+    - try to be as unambiguous as possible
+    - include edge cases
+    - include use cases
+- The search if similar problems have been solved already
+- Once this is done, the next step is to model the solution to the problem. This model will be more or less precise depending on the context. 
+- The next step is to write a first version of the program, then write tests using the specifications of the program and making sure the tests cover the edge cases. Once the tests are written, the debugging phase start until all the tests pass.
+
+
+
+
+
+
+
+
