@@ -1,13 +1,12 @@
 # The issue
 
 We have a motor that can be controlled by different users through a software interface. Currently, there are no protections
-against multiple users trying to use the motor at the same time. Having multiple users trying to control the motor at the same
-time can lead to issues so we want to avoid it.
+against multiple users trying to use the motor at the same time. Having multiple users trying to control the motor at the same time can lead to issues so we want to avoid it.
 
 We assume that once a user start using the motor, they have exclusive access to it. As long as the current user doesn't
-release the control of the motor, no other user can have access to it, no matter how much downtime there is.
+release the control of the motor, no other user can have access to it.
 
-The process for using the motor would be the following:
+The desired process for using the motor would be the following:
 
 1. User ask to take control of the motor
 2. User get control of the motor
@@ -92,13 +91,16 @@ log_out(user)
 
 To go from a design to a working delivery, I would go through the following steps:
 
-- First, write the specification of the problem with the following constraints:
+- First, I would write the specification of the problem with the following constraints:
     - try to be as unambiguous as possible
     - include edge cases
     - include use cases
-- The search if similar problems have been solved already
-- Once this is done, the next step is to model the solution to the problem. This model will be more or less precise depending on the context. 
-- The next step is to write a first version of the program, then write tests using the specifications of the program and making sure the tests cover the edge cases. Once the tests are written, the debugging phase start until all the tests pass.
+- Then I would search if similar problems have been solved already.
+- The next step is to model the program.
+- Then come the implementation of the program.
+- Parallel to writing the code of the program, I would write tests, using the specifications, of the parts of the program that are worked on.
+- Once the program is complete, I would go over the tests to make sure the normal use cases and edge cases are sufficiently covered and all the tests pass.
+- After all the tests pass, the program would be sent to code review to be validated and packaged.
 
 
 
